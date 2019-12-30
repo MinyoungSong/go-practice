@@ -2,8 +2,10 @@ package auth
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/labstack/echo/v4"
+	"skcloud.io/cloudzcp/zcpctl-backend/util"
 )
 
 type User struct {
@@ -15,9 +17,6 @@ func Login() echo.HandlerFunc {
 
 	return func(c echo.Context) (err error) {
 
-		// user := User{Name: name, Email: email}
-		// userbyte, _ := json.Marshal(user)
-
 		c.Logger().Debug("aaaaaa")
 
 		user := new(User)
@@ -25,27 +24,15 @@ func Login() echo.HandlerFunc {
 			return
 		}
 
-		// user.Department = new(type department struct { Code string, Name string})
-
-		// e.Logger.Debug(json.Marshal(user))
-		// e.Logger.Debug(string(userbyte))
-
 		token := createToken(*user)
 
-		type ResponseBody struct {
-			Success bool        `json:"success"`
-			Message string      `json:"message"`
-			Errors  string      `json:"errors"`
-			Data    interface{} `json:"data"`
-		}
+		cookie := new(http.Cookie)
+		cookie.Name = "zcp-cli-token"
+		cookie.Value = token
+		cookie.Expires = time.Now().Add(1 * time.Hour)
+		c.SetCookie(cookie)
 
-		res := new(ResponseBody)
-		res.Success = true
-		res.Message = ""
-		res.Errors = ""
-		res.Data = token
-
-		return c.JSON(http.StatusOK, res)
+		return c.JSON(http.StatusOK, util.SetSuccessTrue(token))
 
 	}
 

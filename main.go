@@ -1,24 +1,30 @@
 package main
 
 import (
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
-	"github.com/joho/godotenv"
 
 	// "github.com/labstack/echo/engine/fasthttp"
 
 	"skcloud.io/cloudzcp/zcpctl-backend/api/auth"
 )
 
-// var e = echo.New()
-// var logger = e.Logger
-
 type responseDataFormat struct {
 	success bool
 	message string
 	errors  interface{}
 	data    interface{}
+}
+
+func init() {
+
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 }
 
 func main() {
@@ -38,8 +44,6 @@ func main() {
 
 	// Set Custom MiddleWare
 	// e.Use(myMw.TransactionHandler(db.Init()))
-
-	godotenv.Load()
 
 	// Routes
 	authGroup := e.Group("/api/auth")
