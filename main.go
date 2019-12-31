@@ -9,6 +9,8 @@ import (
 	// "github.com/labstack/echo/engine/fasthttp"
 
 	"skcloud.io/cloudzcp/zcpctl-backend/api/auth"
+	"skcloud.io/cloudzcp/zcpctl-backend/api/cluster"
+	"skcloud.io/cloudzcp/zcpctl-backend/db"
 )
 
 type responseDataFormat struct {
@@ -50,6 +52,13 @@ func main() {
 	{
 		authGroup.POST("/login", auth.Login())
 	}
+
+	clusterGroup := e.Group("/api/cluster")
+	{
+		clusterGroup.GET("/", cluster.GetClsuterList())
+	}
+
+	db.InitDB()
 
 	// Start server
 	e.Logger.Fatal(e.Start(":1323"))
