@@ -24,3 +24,15 @@ func SetSuccessTrue(data interface{}) *model.ResponseBody {
 	return result
 
 }
+
+func SetSuccessFalse(msg string, err interface{}) *model.ResponseBody {
+
+	result := new(model.ResponseBody)
+	result.Success = false
+	result.Message = msg
+	result.Errors = err
+	result.Data = new(interface{})
+
+	return result
+
+}

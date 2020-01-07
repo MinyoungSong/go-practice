@@ -1,12 +1,10 @@
 package model
 
-import (
-
-)
+import ()
 
 type ResponseBody struct {
 	Success bool        `json:"success"`
 	Message string      `json:"message"`
-	Errors  string      `json:"errors"`
+	Errors  interface{} `json:"errors"`
 	Data    interface{} `json:"data"`
 }

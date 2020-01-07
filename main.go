@@ -55,7 +55,9 @@ func main() {
 
 	clusterGroup := e.Group("/api/cluster")
 	{
-		clusterGroup.GET("/", cluster.GetClsuterList())
+		clusterGroup.GET("", cluster.GetClsuterList())
+		clusterGroup.GET("/", cluster.GetClsuterListMD())
+		clusterGroup.GET("/:cluster_name", cluster.GetClsuterList())
 	}
 
 	db.InitDB()
