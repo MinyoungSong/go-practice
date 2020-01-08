@@ -13,6 +13,7 @@ import (
 	"skcloud.io/cloudzcp/zcpctl-backend/util"
 )
 
+// GetClsuterList - Cluster 정보 조회
 func GetClsuterList() echo.HandlerFunc {
 
 	return func(c echo.Context) (err error) {
@@ -59,6 +60,7 @@ func GetClsuterList() echo.HandlerFunc {
 
 }
 
+// GetClsuterCredential - Cluster kubeconfig 정보 조회
 func GetClsuterCredential() echo.HandlerFunc {
 
 	return func(c echo.Context) (err error) {
