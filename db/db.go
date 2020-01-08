@@ -2,18 +2,13 @@ package db
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"os"
 
 	"github.com/joho/godotenv"
-	"skcloud.io/cloudzcp/zcpctl-backend/model"
 
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-
-	"github.com/Kamva/mgm"
 )
 
 var dbURL string = ""
@@ -38,33 +33,8 @@ func InitDB() {
 
 	clientOptions := options.Client().ApplyURI(dbURL)
 
-	// Setup mgm default config
-	err := mgm.SetDefaultConfig(nil, "iam", clientOptions)
-
-	// // Connect to MongoDB
-	// client, err := mongo.Connect(context.TODO(), clientOptions)
-
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// // Check the connection
-	// err = client.Ping(context.TODO(), nil)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// collection = client.Database("iam").Collection("clusterprovisions")
-
-	fmt.Println("Connected to MongoDB!")
-
-}
-
-func Select(filter bson.D) []model.Clusterprovisions {
-
 	// Connect to MongoDB
-	clientOptions := options.Client().ApplyURI(dbURL)
+	// clientOptions := options.Client().ApplyURI(dbURL)
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 
 	if err != nil {
@@ -80,53 +50,17 @@ func Select(filter bson.D) []model.Clusterprovisions {
 
 	collection = client.Database("iam").Collection("clusterprovisions")
 
-	var results []model.Clusterprovisions
-	var result model.Clusterprovisions
+}
 
-	resultOne := collection.FindOne(context.TODO(), bson.D{{"metaData.clusterName", "native"}})
-	resultOne.Decode(&result)
-	rawByte, _ := resultOne.DecodeBytes()
+func Select(filter interface{}) (*mongo.Cursor, error) {
 
-	// err1 := bson.Unmarshal(rawByte, &result)
-	// if err1 == nil {
-	// 	fmt.Println(result)
-	// }
+	return collection.Find(context.TODO(), filter)
 
-	fmt.Println("########################")
+}
 
-	fmt.Println(string(rawByte))
-	results = append(results, result)
+func SelectOne(filter interface{}) *mongo.SingleResult {
 
-	// cur, err := collection.Find(context.TODO(), filter)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// // Finding multiple documents returns a cursor
-	// // Iterating through the cursor allows us to decode documents one at a time
-	// for cur.Next(context.TODO()) {
-
-	// 	// create a value into which the single document can be decoded
-	// 	var elem model.Clusterprovisions
-
-	// 	err := cur.Decode(&elem)
-	// 	if err != nil {
-	// 		log.Fatal(err)
-	// 	}
-
-	// 	results = append(results, elem)
-	// }
-
-	// if err := cur.Err(); err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// Close the cursor once finished
-	// defer cur.Close(context.TODO())
-
-	// fmt.Printf("Found multiple documents (array of pointers): %+v\n", results)
-
-	return results
+	return collection.FindOne(context.TODO(), filter)
 
 }
 
@@ -141,3 +75,56 @@ func Update() {
 func Delete() {
 
 }
+
+// func Select(filter bson.D) []model.Clusterprovisions {
+
+// 	// Connect to MongoDB
+// 	clientOptions := options.Client().ApplyURI(dbURL)
+// 	client, err := mongo.Connect(context.TODO(), clientOptions)
+
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+
+// 	// Check the connection
+// 	err = client.Ping(context.TODO(), nil)
+
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+
+// 	collection = client.Database("iam").Collection("clusterprovisions")
+
+// 	var results []model.Clusterprovisions
+// 	var result model.Clusterprovisions
+
+// 	collection.FindOne(context.TODO(), bson.D{{"metaData.clusterName", "native"}}).Decode(&result)
+
+// 	results = append(results, result)
+
+// 	return results
+
+// }
+
+// func SelectJSONData() kubeapi.Config {
+// 	jsonData := []byte(`{"kind":"Config","apiVersion":"v1","clusters":[{"name":"native","cluster":{"server":"https://169.56.112.84:6443","insecure-skip-tls-verify":true}}],"users":[{"name":"admin","user":{"token":"eyJhbGciOiJSUzI1NiIsImtpZCI6IiJ9.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJ6Y3AtY2xpIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6InpjcC1jbGktYmFja2VuZC1zZXJ2aWNlLWFkbWluLXRva2VuLWdyd2s3Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6InpjcC1jbGktYmFja2VuZC1zZXJ2aWNlLWFkbWluIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQudWlkIjoiODg5ZTk0MGEtMDQ1NC0xMWVhLTkyY2MtMDY4YmRhZDQ4Nzc4Iiwic3ViIjoic3lzdGVtOnNlcnZpY2VhY2NvdW50OnpjcC1jbGk6emNwLWNsaS1iYWNrZW5kLXNlcnZpY2UtYWRtaW4ifQ.MCqNHYlXu4DolTsx4E-OTC4GWiJVX4IpAh6Zj9vdrmQfXFSrzL5JXsVYsPn5rivkFcC9Vcfp1yaar9bnNCGY0daZFHRa_04Ul7cJ3m1D-yeZSvEX17ClC47nfgEDFC-CFTysAeqTfHrf8yk-Ln4wBhbzsPahf2tL4eXDTzzvl-IWewIJPkkVpD5ad6UFcG45F5UfA-yVMaZxJTjszW9RJx3RegHQj5fIlQ_4_AuHioqvTkNC9yPGG5sa0F2nNZnkwAmbUI0OH6nMQQIoYo-ErYvlNgVDuI0hWJirDQ7TX1EXmeRjmFrk0m50QCY-px7EIBWEr-mYMen6J80yFkca8g"}}],"contexts":[{"name":"native-context","context":{"cluster":"native","user":"admin","namespace":"default"}}],"current-context":"native-context"}`)
+
+// 	var kubeconfig kubeapi.Config
+// 	var dat map[string]interface{}
+
+// 	json.Unmarshal(jsonData, &kubeconfig)
+// 	json.Unmarshal(jsonData, &dat)
+
+// 	// fmt.Println(kubeconfig)
+// 	// fmt.Println("@@@@@@@@@@@@@@@@@@@@@@@")
+// 	// fmt.Println(dat)
+
+// 	// s, _ := json.Marshal(kubeconfig)
+
+// 	// fmt.Println("$$$$$$$$$$")
+// 	// fmt.Println(s)
+// 	// fmt.Println("$$$$$$$$$$")
+// 	// fmt.Println(string(s))
+
+// 	return kubeconfig
+// }

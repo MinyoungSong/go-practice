@@ -2,14 +2,10 @@ package model
 
 import (
 	"time"
-
-	"github.com/Kamva/mgm"
-	kubeapi "k8s.io/client-go/tools/clientcmd/api/v1"
 )
 
 type Clusterprovisions struct {
-	mgm.DefaultModel `bson:",inline"`
-	MetaData         struct {
+	MetaData struct {
 		ClusterName   string            `json:"clusterName"`
 		CreatedBy     string            `json:"createdBy"`
 		CreatedTime   time.Time         `json:"createdTime"`
@@ -67,12 +63,12 @@ type ProvisionConfigObj struct {
 }
 
 type ProvisionResultObj struct {
-	ClusterName interface{}     `json:"clusterName"`
-	Errors      interface{}     `json:"errors"`
-	Kubeconfig  *kubeapi.Config `json:"kubeconfig"`
-	Message     interface{}     `json:"message"`
-	Status      interface{}     `json:"status"`
-	Success     interface{}     `json:"success"`
+	ClusterName interface{}            `json:"clusterName"`
+	Errors      interface{}            `json:"errors"`
+	Kubeconfig  map[string]interface{} `json:"kubeconfig"`
+	Message     interface{}            `json:"message"`
+	Status      interface{}            `json:"status"`
+	Success     interface{}            `json:"success"`
 }
 
 type K8sAPIObj struct {
