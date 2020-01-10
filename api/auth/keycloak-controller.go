@@ -61,10 +61,35 @@ func CreateToken(user User) string {
 		log.Printf("resp Error!!!!")
 	}
 
-	var res = make(map[string]interface{})
+	res := make(map[string]interface{})
 	json.Unmarshal(resp.Body(), &res)
 	token = fmt.Sprintf("%v", res["access_token"])
 
 	return token
+
+}
+
+func VerifyToken(token string) map[string]interface{} {
+
+	resultMap := map[string]interface{}{
+		"active":   false,
+		"username": "",
+	}
+
+	verifyTokenBody := map[string]string{
+		"token": token,
+	}
+
+	client.SetFormData(verifyTokenBody)
+
+	resp, err := client.R().Post(verifyTokenURL)
+
+	if err != nil {
+		log.Printf("resp Error!!!!")
+	}
+
+	json.Unmarshal(resp.Body(), &resultMap)
+
+	return resultMap
 
 }

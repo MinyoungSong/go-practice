@@ -6,8 +6,6 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
 
-	// "github.com/labstack/echo/engine/fasthttp"
-
 	"skcloud.io/cloudzcp/zcpctl-backend/api/auth"
 	"skcloud.io/cloudzcp/zcpctl-backend/api/cluster"
 	"skcloud.io/cloudzcp/zcpctl-backend/db"
@@ -45,7 +43,17 @@ func main() {
 	// e.SetHTTPErrorHandler(handler.JSONHTTPErrorHandler)
 
 	// Set Custom MiddleWare
-	// e.Use(myMw.TransactionHandler(db.Init()))
+	e.Use(auth.VerifyAuth(auth.VerifyAuthConfig{
+
+		Skipper: func(c echo.Context) bool {
+
+			//token 체크가 제외되는 path
+			if c.Path() == "/api/auth/login" || c.Path() == "/api/cluster/callback/provisioning" {
+				return true
+			}
+			return false
+		},
+	}))
 
 	// Routes
 	authGroup := e.Group("/api/auth")
