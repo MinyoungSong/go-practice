@@ -8,6 +8,7 @@ import (
 
 	"skcloud.io/cloudzcp/zcpctl-backend/api/auth"
 	"skcloud.io/cloudzcp/zcpctl-backend/api/cluster"
+	"skcloud.io/cloudzcp/zcpctl-backend/api/resources"
 	"skcloud.io/cloudzcp/zcpctl-backend/db"
 )
 
@@ -67,6 +68,11 @@ func main() {
 		clusterGroup.GET("/", cluster.GetClsuterList())
 		clusterGroup.GET("/:cluster_name", cluster.GetClsuterList())
 		clusterGroup.GET("/:cluster_name/credential", cluster.GetClsuterCredential())
+	}
+
+	resourcesGroup := e.Group("/api/resources")
+	{
+		resourcesGroup.GET("", resources.GetK8sResources())
 	}
 
 	db.InitDB()
